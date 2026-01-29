@@ -1,0 +1,13 @@
+credentials:
+  username: standard_user
+  password: secret_sauce
+  wrongPassword: wrong_password
+
+apiCredentials:
+  username: mor_2314
+  password: 83r5^_
+
+customer:
+  firstName: Fidan
+  lastName: Gurcan
+  postalCode: 1011AB
