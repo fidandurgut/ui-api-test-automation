@@ -27,6 +27,9 @@ public abstract class BaseApiTest {
         spec = new RequestSpecBuilder()
                 .setBaseUri(env.api.baseUrl)
                 .setContentType("application/json")
+                .setAccept("application/json")
+                // Some public APIs/WAFs return 403 for requests without a UA (common in CI).
+                .addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                 .log(LogDetail.URI)
                 .log(LogDetail.METHOD)
                 .log(LogDetail.BODY)
