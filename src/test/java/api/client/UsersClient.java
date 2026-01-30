@@ -19,9 +19,4 @@ public class UsersClient {
                 .delete("/users/" + id);
     }
 
-    public Response getUser(int id) {
-        return given(spec)
-                .when()
-                .get("/users/" + id);
-    }
 }

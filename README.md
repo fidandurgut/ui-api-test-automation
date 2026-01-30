@@ -1,7 +1,6 @@
 # 🧪 Test Automation Framework – UI & API
 
-This repository contains an automation framework covering **UI and API testing**.
-It is designed to be **maintainable, scalable, and CI-ready**.
+Automation framework covering **UI and API testing**, designed to be **maintainable, scalable, and CI-ready**.
 
 ---
 
@@ -16,27 +15,70 @@ It is designed to be **maintainable, scalable, and CI-ready**.
 | Assertions | AssertJ |
 | Build Tool | Maven |
 | Config | YAML |
-| CI | GitLab CI |
+| CI/CD | GitHub Actions |
+| Reporting | Allure Report |
 
 ---
 
 ## ▶️ How to Run Tests
 
 ### Run All Tests
+```bash
 mvn clean test
+```
 
 ### Run Only UI Tests
+```bash
 mvn test -Djunit.jupiter.tags.include=ui
+```
 
 ### Run Only API Tests
-mvn test -Djunit.jupiter.tags.include=api
+```bash
+ mvn test -Djunit.jupiter.tags.include=api
+```
+
+### Proxy Setup
+For local runs, proxy setup is optional.
+In CI, the proxy credentials are provided via **environment variables**.
+The code expects:
+```java
+.withAuth(System.getenv("WEBSHARE_USER"), System.getenv("WEBSHARE_PASS"))
+```
+
+### Generate Allure Report Locally
+```bash
+mvn allure:report
+mvn allure:serve
+```
+
+All test executions generate an Allure report during the GitHub Actions pipeline.
+
+Live report:
+https://fidandurgut.github.io/ui-api-test-automation/
+
+Report includes:
+- Test execution summary
+- Passed/failed/broken tests
+- Detailed steps and logs
+- API request/response validation details
+
+### Continuous Integration
+Tests run automatically on:
+- Every push to `main`
+- Every pull request
+
+Pipeline stages:
+- Build project
+- Execute UI & API tests
+- Generate Allure report
+- Publish report to GitHub Pages
 
 ---
 
 # 🌐 UI Test Coverage (SauceDemo)
 
-**Application:** https://www.saucedemo.com
-**Test user:** `standard_user / secret_sauce`
+Application: https://www.saucedemo.com  
+Test user: `standard_user / secret_sauce`
 
 ## ✔ Implemented Scenarios
 
@@ -58,7 +100,7 @@ mvn test -Djunit.jupiter.tags.include=api
 
 # 🔌 API Test Coverage (FakeStore API)
 
-**Base URL:** https://fakestoreapi.com
+Base URL: https://fakestoreapi.com
 
 ## ✔ Implemented Scenarios
 
@@ -106,7 +148,6 @@ These behaviors are treated as system limitations, not test failures.
 - CI-ready execution
 - Allure reporting
 
-
 ---
 
 ## 🚀 Future Improvements
@@ -117,8 +158,6 @@ These behaviors are treated as system limitations, not test failures.
 ---
 
 # 📦 Submission Compliance
-
-This section explains how the solution meets all stated submission requirements.
 
 ## Repository Delivery
 - Delivered as a single GitHub repository
@@ -144,7 +183,7 @@ This README includes:
 ## Test Reports
 - Maven Surefire generates JUnit XML reports
 - UI failures capture screenshots automatically
-- Reports and screenshots are available under the target/ directory and CI artifacts
+- Reports and screenshots are available under the `target/` directory and CI artifacts
 
 ---
 
