@@ -14,6 +14,7 @@ import java.time.Duration;
 
 import static io.restassured.config.HttpClientConfig.httpClientConfig;
 import static io.restassured.config.RestAssuredConfig.config;
+import static io.restassured.specification.ProxySpecification.host;
 
 public abstract class BaseApiTest {
 
@@ -29,16 +30,13 @@ public abstract class BaseApiTest {
                 .setContentType("application/json")
                 .setAccept("application/json")
                 // Some public APIs/WAFs return 403 for requests without a UA (common in CI).
-                //.addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                .addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                 .log(LogDetail.URI)
                 .log(LogDetail.METHOD)
                 .log(LogDetail.BODY)
-                .addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36")
-                .addHeader("Accept-Language", "en-US,en;q=0.9")
-                .addHeader("Sec-Ch-Ua", "\"Google Chrome\";v=\"119\", \"Chromium\";v=\"119\", \"Not?A_Brand\";v=\"24\"")
-                .addHeader("Sec-Ch-Ua-Mobile", "?0")
-                .addHeader("Sec-Ch-Ua-Platform", "\"macOS\"")
-                .addFilter(new io.restassured.filter.log.ResponseLoggingFilter()) // Log everything!
+                .setProxy(host("p.webshare.io")
+                        .withPort(80)
+                        .withAuth(System.getenv("WEBSHARE_USER"), System.getenv("WEBSHARE_PASS")))
                 .build();
 
         RestAssured.config = config()
