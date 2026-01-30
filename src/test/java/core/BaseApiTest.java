@@ -35,7 +35,7 @@ public abstract class BaseApiTest {
                 .log(LogDetail.METHOD)
                 .log(LogDetail.BODY)
                 .setProxy(host("p.webshare.io")
-                        .withPort(80)
+                        .withPort(3128)
                         .withAuth(System.getenv("WEBSHARE_USER"), System.getenv("WEBSHARE_PASS")))
                 .build();
 
