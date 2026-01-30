@@ -28,9 +28,17 @@ jobs:
           WEBSHARE_USER: ${{ secrets.WEBSHARE_USER }}
           WEBSHARE_PASS: ${{ secrets.WEBSHARE_PASS }}
 
-      - name: Upload test reports
-        uses: actions/upload-artifact@v4
-        if: always()
+      - name: Generate Allure Report
+        uses: simple-elf/allure-report-action@v1.7
         with:
-          name: test-reports
-          path: target/
+          allure_results: target/allure-results
+          allure_report: allure-report
+          gh_pages: gh-pages
+          gh_pages_dir: allure-history
+
+      - name: Deploy report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history

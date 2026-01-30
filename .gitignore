@@ -3,6 +3,10 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 .kotlin
+.allure
+.idea
+.ai
+
 
 ### Eclipse ###
 .apt_generated
