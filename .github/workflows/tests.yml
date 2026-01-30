@@ -25,6 +25,9 @@ jobs:
 
       - name: Run tests
         run: mvn -q clean test
+        env:
+          WEBSHARE_USER: ${{ secrets.WEBSHARE_USER }}
+          WEBSHARE_PASS: ${{ secrets.WEBSHARE_PASS }}
 
       - name: Upload allure-results (artifact)
         if: always()
