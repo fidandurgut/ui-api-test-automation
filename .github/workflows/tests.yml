@@ -1,44 +1,58 @@
-name: UI & API Tests
+name: Tests + Allure Report
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   pull_request:
+
+permissions:
+  contents: write
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
-
-      - name: Install Chrome
-        uses: browser-actions/setup-chrome@v1
+          java-version: "17"
+          cache: maven
 
       - name: Run tests
-        run: mvn clean test -Dheadless=true
-        env:
-          WEBSHARE_USER: ${{ secrets.WEBSHARE_USER }}
-          WEBSHARE_PASS: ${{ secrets.WEBSHARE_PASS }}
+        run: mvn -q clean test
 
-      - name: Generate Allure Report
-        uses: simple-elf/allure-report-action@v1.7
+      - name: Upload allure-results (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          allure_results: target/allure-results
-          allure_report: allure-report
-          gh_pages: gh-pages
-          gh_pages_dir: allure-history
+          name: allure-results
+          path: target/allure-results
+          if-no-files-found: warn
+
+      - name: Set up Node (for Allure CLI)
+        if: always()
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Allure CLI
+        if: always()
+        run: npm i -g allure-commandline@2.24.0
+
+      - name: Generate Allure HTML report
+        if: always()
+        run: |
+          allure generate target/allure-results -o allure-report --clean
 
       - name: Deploy report to GitHub Pages
+        if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: allure-history
+          publish_dir: allure-report
