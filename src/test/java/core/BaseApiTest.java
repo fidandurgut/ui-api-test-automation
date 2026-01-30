@@ -33,6 +33,7 @@ public abstract class BaseApiTest {
                 .log(LogDetail.URI)
                 .log(LogDetail.METHOD)
                 .log(LogDetail.BODY)
+                .addFilter(new io.restassured.filter.log.ResponseLoggingFilter()) // Log everything!
                 .build();
 
         RestAssured.config = config()
