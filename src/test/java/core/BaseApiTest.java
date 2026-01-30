@@ -34,10 +34,13 @@ public abstract class BaseApiTest {
                 .log(LogDetail.URI)
                 .log(LogDetail.METHOD)
                 .log(LogDetail.BODY)
-                .setProxy(host("p.webshare.io")
-                        .withPort(3128)
-                        .withAuth(System.getenv("WEBSHARE_USER"), System.getenv("WEBSHARE_PASS")))
                 .build();
+
+        if (System.getenv("WEBSHARE_USER") != null) {
+            RestAssured.proxy = host("p.webshare.io")
+                .withPort(3128)
+                .withAuth(System.getenv("WEBSHARE_USER"), System.getenv("WEBSHARE_PASS"));
+        }
 
         RestAssured.config = config()
                 .httpClient(httpClientConfig()
