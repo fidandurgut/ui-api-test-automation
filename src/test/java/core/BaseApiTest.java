@@ -25,7 +25,7 @@ public abstract class BaseApiTest {
     static void apiSetup() {
         var env = EnvConfigLoader.get();
 
-        spec = new RequestSpecBuilder()
+        var builder = new RequestSpecBuilder()
                 .setBaseUri(env.api.baseUrl)
                 .setContentType("application/json")
                 .setAccept("application/json")
@@ -33,14 +33,15 @@ public abstract class BaseApiTest {
                 .addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
                 .log(LogDetail.URI)
                 .log(LogDetail.METHOD)
-                .log(LogDetail.BODY)
-                .build();
+                .log(LogDetail.BODY);
 
         if (System.getenv("WEBSHARE_USER") != null) {
-            RestAssured.proxy = host("p.webshare.io")
-                .withPort(3128)
-                .withAuth(System.getenv("WEBSHARE_USER"), System.getenv("WEBSHARE_PASS"));
+            builder.setProxy(host("p.webshare.io")
+                    .withPort(3128)
+                    .withAuth(System.getenv("WEBSHARE_USER"), System.getenv("WEBSHARE_PASS")));
         }
+
+        spec = builder.build();
 
         RestAssured.config = config()
                 .httpClient(httpClientConfig()
