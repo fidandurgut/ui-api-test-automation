@@ -29,13 +29,103 @@ mvn clean test
 
 ### Run Only UI Tests
 ```bash
-mvn test -Djunit.jupiter.tags.include=ui
+mvn test -Pui
 ```
 
 ### Run Only API Tests
 ```bash
- mvn test -Djunit.jupiter.tags.include=api
+mvn test -Papi
 ```
+
+### Run Tests by Tag Directly
+```bash
+mvn test -Djunit.jupiter.tags.include=ui
+mvn test -Djunit.jupiter.tags.include=api
+```
+
+### Run Tests with Docker
+Build the Docker image:
+
+```bash
+docker build -t ui-api-test-automation .
+```
+
+Run all tests:
+
+```bash
+docker run --rm ui-api-test-automation
+```
+
+Run only API tests:
+
+```bash
+docker run --rm ui-api-test-automation mvn -B test -Papi
+```
+
+Run only UI tests:
+
+```bash
+docker run --rm ui-api-test-automation mvn -B test -Pui
+```
+
+Open a terminal inside the Docker container:
+
+```bash
+docker run --rm -it ui-api-test-automation bash
+```
+
+The project is available inside the container at `/workspace`. From there, run:
+
+```bash
+mvn -B test -Pui
+mvn -B test -Papi
+mvn -B test -Pall
+```
+
+If `bash` is not available, use:
+
+```bash
+docker run --rm -it ui-api-test-automation sh
+```
+
+If proxy credentials are required, pass them as environment variables:
+
+```bash
+docker run --rm \
+  -e WEBSHARE_USER="$WEBSHARE_USER" \
+  -e WEBSHARE_PASS="$WEBSHARE_PASS" \
+  ui-api-test-automation
+```
+
+### Browser Setup for UI Tests
+UI tests require a local Chrome or Chromium browser executable.
+
+The framework auto-detects common Chrome/Chromium locations on macOS and Linux. If Chrome is installed in a custom location, pass the binary explicitly:
+
+```bash
+mvn test -Pui -Dchrome.binary="/path/to/chrome"
+```
+
+Or use an environment variable:
+
+```bash
+export CHROME_BINARY="/path/to/chrome"
+mvn test -Pui
+```
+
+On macOS, the default Google Chrome path is usually:
+
+```bash
+/Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+```
+
+If you only want to run API tests, Chrome is not required:
+
+```bash
+mvn test -Papi
+```
+
+When Chrome/Chromium is not available, UI tests are skipped with a setup message instead of failing with Selenium's `cannot find Chrome binary` session error.
 
 ### Proxy Setup
 For local runs, proxy setup is optional.
@@ -71,7 +161,33 @@ Pipeline stages:
 - Build project
 - Execute UI & API tests
 - Generate Allure report
-- Publish report to GitHub Pages
+- Publish report to GitHub Pages on pushes to `main`
+
+---
+
+## 🧱 Project Structure
+
+```text
+src/test/java/com/testautomation/
+  core/
+    config/
+    driver/
+    extensions/
+    utils/
+  ui/
+    pages/
+    tests/
+  api/
+    clients/
+    dto/
+    tests/
+
+src/test/resources/
+  environments/
+  testdata/
+```
+
+All reusable automation code lives under `src/test/java` because this repository is a test automation project, not an application library.
 
 ---
 
@@ -111,7 +227,7 @@ Base URL: https://fakestoreapi.com
 | Create cart with existing product | `CartsApiTest.shouldCreateCart` | Cart created, id returned, correct product + quantity |
 | Delete a user | `UsersApiTest.shouldDeleteUser` | DELETE succeeds, response contract validated |
 | Negative login | `AuthApiTest.negative_shouldRejectInvalidLogin` | Invalid login returns error, no token issued |
-| Negative unknown product | `ProductsApiTest.negative_shouldReturnNotFoundForUnknownProduct` | API returns 404 for non-existing product |
+| Negative unknown product | `ProductsApiTest.negative_shouldReturnNoProductForUnknownProduct` | FakeStore returns 200 with an empty or `null` body for a non-existing product |
 
 ## API Validation Strategy
 - HTTP status code checks
@@ -134,6 +250,7 @@ Base URL: https://fakestoreapi.com
 - FakeStore API is a demo service and may not persist data reliably
 - Create endpoints may return 200 or 201
 - Delete operations may not be reflected in subsequent GET calls
+- Unknown product lookup returns 200 with an empty or `null` body instead of a conventional 404
 
 These behaviors are treated as system limitations, not test failures.
 
@@ -144,6 +261,7 @@ These behaviors are treated as system limitations, not test failures.
 - Page Object Model for UI
 - API client layer for service abstraction
 - Environment-based configuration
+- Single base package: `com.testautomation`
 - Deterministic tests (no cross-test dependency)
 - CI-ready execution
 - Allure reporting
@@ -157,10 +275,10 @@ These behaviors are treated as system limitations, not test failures.
 
 ---
 
-# 📦 Submission Compliance
+# 📦 Repository Notes
 
-## Repository Delivery
-- Delivered as a single GitHub repository
+## Repository Layout
+- Maintained as a single GitHub repository
 - Contains UI tests, API tests, CI config, and documentation
 
 ## Single Project Structure
@@ -211,10 +329,11 @@ All implementation decisions and test logic were reviewed and validated manually
 - Error payloads may not be consistent
 - Application returns responses with correct code
 - Product IDs in FakeStore are within a small fixed range; therefore a large ID (e.g., 9999) is used to simulate a non-existing product.
+- FakeStore returns 200 with an empty or `null` body for that non-existing product lookup.
 
 ---
 
 ## 🙏 Thank You
 
-Thank you for taking the time to review this submission.
-I hope the structure, clarity, and validation depth of this framework clearly demonstrate both technical ability and test design understanding.
+Thank you for taking the time to review this project.
+The structure, clarity, and validation depth are intended to demonstrate practical UI/API automation design.

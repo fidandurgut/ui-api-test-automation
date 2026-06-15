@@ -1,0 +1,11 @@
+.git
+.github
+.idea
+.vscode
+target
+out
+bin
+.DS_Store
+.allure
+.ai
+*.iml

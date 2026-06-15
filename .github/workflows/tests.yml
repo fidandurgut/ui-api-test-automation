@@ -23,9 +23,16 @@ jobs:
           java-version: "17"
           cache: maven
 
+      - name: Set up Chrome
+        id: setup-chrome
+        uses: browser-actions/setup-chrome@v2
+        with:
+          install-dependencies: true
+
       - name: Run tests
         run: mvn -q clean test
         env:
+          CHROME_BINARY: ${{ steps.setup-chrome.outputs.chrome-path }}
           WEBSHARE_USER: ${{ secrets.WEBSHARE_USER }}
           WEBSHARE_PASS: ${{ secrets.WEBSHARE_PASS }}
 
@@ -53,7 +60,7 @@ jobs:
           allure generate target/allure-results -o allure-report --clean
 
       - name: Deploy report to GitHub Pages
-        if: always()
+        if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
